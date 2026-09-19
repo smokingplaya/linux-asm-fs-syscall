@@ -1,0 +1,9 @@
+# linux-asm-fs-syscall
+just trying assembly
+
+# building
+you can build it using [The Netwide Assembler](https://nasm.us) (NASM)
+```bash
+nasm -f elf64 main.asm -o main.o
+ld main.o -o main
+```
