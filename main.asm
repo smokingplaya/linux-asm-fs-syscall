@@ -1,64 +1,33 @@
+extern _print, _openfile, _readfile, _exit, _exit_with_err
+global _exit_with_err
+
 section .data
-	; Go
 	StrErrOpening db "an error occured while trying open file", 10
 	StrErrOpeningLen equ $ - StrErrOpening
-	StrFilePath db "/tmp/testfile", 0
-	StrFilePathLen equ $ - StrFilePath
-
-section .bss
-	; buffer with size = 1024 bytes
-	ReadFileBuffer resb 1024
-	ReadFileBufferLen equ $ - ReadFileBuffer
 
 section .text
 	global _start
 
 _start:
+	; if argc (arg count) less than or equal 1
+	; then exiting program
+	mov rax, [rsp]
+	cmp rax, 1
+	jle _exit_with_err
+
+	; skipping 1 argument (it is path to current executable)
+	mov rdi, [rsp + 16]
+
 	; reading file into some buffer
 	; then printing it out
-
 	call _openfile
-
 	; descriptor in `rax`
 	call _readfile
-
-	lea rsi, [rel ReadFileBuffer]
-	mov rdx, ReadFileBufferLen
-
+	; returns rax, rdx
 	call _print
 
 	; exiting
 	call _exit
-
-; кидает в регистр SomeText и вызывает сисько(л)
-_print:
-	mov rax, 1 ; write сиськол номер
-	mov rdi, 1 ; file descriptor stdout
-	syscall
-	ret
-
-_openfile:
-	mov rax, 2
-	lea rdi, [rel StrFilePath]
-	xor rsi, rsi
-	xor rdx, rdx
-	syscall
-	ret
-
-; arguments: `rax` file descriptor
-_readfile:
-	cmp rax, 0
-	; if `open` syscall returns error, not a file descriptor (err = number < 0)
-	; jump on exit
-	jl _exit_with_err
-
-	mov rdi, rax
-
-	mov rax, 0
-	lea rsi, [rel ReadFileBuffer]
-	mov rdx, ReadFileBufferLen
-	syscall
-	ret
 
 _exit:
 	mov rax, 60
