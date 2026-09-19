@@ -1,5 +1,5 @@
-extern _print, _openfile, _readfile, _exit, _exit_with_err
-global _exit_with_err
+extern print, openfile, readfile, exit, exit_with_err
+global exit_with_err
 
 section .data
 	StrErrOpening db "an error occured while trying open file", 10
@@ -13,29 +13,29 @@ _start:
 	; then exiting program
 	mov rax, [rsp]
 	cmp rax, 1
-	jle _exit_with_err
+	jle exit_with_err
 
 	; skipping 1 argument (it is path to current executable)
 	mov rdi, [rsp + 16]
 
 	; reading file into some buffer
 	; then printing it out
-	call _openfile
+	call openfile
 	; descriptor in `rax`
-	call _readfile
+	call readfile
 	; returns rax, rdx
-	call _print
+	call print
 
 	; exiting
-	call _exit
+	call exit
 
-_exit:
+exit:
 	mov rax, 60
 	mov rdi, 1
 	syscall
 
-_exit_with_err:
+exit_with_err:
 	lea rsi, [rel StrErrOpening]
 	mov rdx, StrErrOpeningLen
-	call _print
-	call _exit
+	call print
+	call exit

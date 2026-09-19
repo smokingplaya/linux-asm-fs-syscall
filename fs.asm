@@ -1,6 +1,6 @@
-extern _exit_with_err
+extern exit_with_err
 
-global _openfile, _readfile
+global openfile, readfile
 
 section .bss
 	; buffer with size = 1024 bytes
@@ -10,7 +10,7 @@ section .bss
 section .text
 
 ; `rdi` - *char
-_openfile:
+openfile:
 	mov rax, 2
 	xor rsi, rsi
 	xor rdx, rdx
@@ -19,11 +19,11 @@ _openfile:
 
 ; arguments: `rax` file descriptor
 ; `raw` - result buffer
-_readfile:
+readfile:
 	cmp rax, 0
 	; if `open` syscall returns error, not a file descriptor (err = number < 0)
 	; jump on exit
-	jl _exit_with_err
+	jl exit_with_err
 
 	mov rdi, rax
 
